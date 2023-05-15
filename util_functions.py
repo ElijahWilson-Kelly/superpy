@@ -1,0 +1,58 @@
+import csv
+import datetime
+
+def display_error_message(msg):
+    print(msg)
+
+def find_closest_expiration_date(bought_ids):
+    item_to_sell = None
+    with open("./data/bought.csv", newline="") as csv_file:
+        entries_bought = csv.DictReader(csv_file)
+        nearest_expiry = datetime.date.max
+        for entry in entries_bought:
+            if entry["id"] not in bought_ids:
+                continue
+            (day, month, year) = entry["expiration_date"].split("/")
+            expiration_date = datetime.date(int(year), int(month), int(day))
+            if expiration_date < nearest_expiry:
+                nearest_expiry = expiration_date
+                item_to_sell = entry
+    return item_to_sell
+
+def get_next_id(csv_file_path):
+    result = 0
+    with open(csv_file_path, newline="") as csvfile:
+        contents = csv.reader(csvfile)
+        for row in contents:
+            result += 1
+    return result
+
+def string_to_date(string):
+    (day, month, year) = string.split("/")
+    return datetime.date(int(year), int(month), int(day))
+
+def get_internal_date():
+    with open("./date.txt") as date_file:
+        (day, month, year) = date_file.read().split("/")
+        return datetime.date(int(year), int(month), int(day))
+        
+   
+def convert_date(input):
+    # Takes an input {string} and converts it to a date object and then into a string with format DD/MM/YYYY
+    try:
+        date = get_internal_date()
+        if input.lower() == "tomorrow":
+            date += datetime.timedelta(days=1)
+        elif input.lower() == "today":
+            pass
+        elif input.lower() == "yesterday":
+            date -= datetime.timedelta(days=1)
+        else:
+            (day, month, year) = input.split("/")
+            date = datetime.date(int(year), int(month), int(day)) 
+        (year, month, day) = date.isoformat().split("-")
+        return f'{day}/{month}/{year}'
+    except:
+        raise Exception("Invalid Date")
+       
+    
