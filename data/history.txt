@@ -1,0 +1,4 @@
+buy
+buy
+buy
+sell

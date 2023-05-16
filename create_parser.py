@@ -17,5 +17,7 @@ def create_parser():
     inventory_parser = sub_parsers.add_parser("inventory")
 
     reset_parser = sub_parsers.add_parser("reset")
+
+    undo_parser = sub_parsers.add_parser("undo")
     
     return parser

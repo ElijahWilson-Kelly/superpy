@@ -1,12 +1,13 @@
 import csv
 import datetime
 
-from util_functions import find_closest_expiration_date, get_next_id, string_to_date, get_internal_date, convert_date
+from util_functions import find_closest_expiration_date, get_next_id, string_to_date, get_internal_date, convert_date, remove_last_entry
 
 FIELDNAMES = {
     "bought": ["id", "product_name", "buy_date", "buy_price", "expiration_date"],
     "sold": ["id", "product_name", "bought_id", "sell_date", "sell_price"],
-    "inventory": ["product_name", "buy_prices", "bought_ids", "count"]
+    "inventory": ["product_name", "buy_prices", "bought_ids", "count"],
+    "history": ["action"]
 }
 
 def buy_item(item):
@@ -23,6 +24,7 @@ def buy_item(item):
             "buy_price": item["price"],
             "expiration_date": item["expiration_date"],
         })
+    add_action_to_history("buy")
     update_inventory()
 
 def sell_item(item):
@@ -47,6 +49,7 @@ def sell_item(item):
             "sell_date": date,
             "sell_price": item["price"]
         })
+    add_action_to_history("sell")
     update_inventory()
 
 def update_inventory():
@@ -89,6 +92,26 @@ def show_inventory():
         for entry in entries_inventory:
             print(entry)
 
+def undo():
+    action = None
+    rows = []
+    with open("./data/history.txt") as txt_file:
+        rows = txt_file.read().split("\n")
+        action = rows.pop(len(rows) - 2)
+    with open("./data/history.txt", "w") as txt_file:
+        txt_file.write("\n".join(rows))
+    if action == "buy":
+        remove_last_entry("./data/bought.csv")
+    elif action == "sell":
+        remove_last_entry("./data/sold.csv")
+    update_inventory()
+    
+
+def add_action_to_history(action):
+    with open("./data/history.txt", "a") as txt_file:
+        txt_file.write(action)
+        txt_file.write("\n")
+
 def reset():
     with open("./data/bought.csv", "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=FIELDNAMES["bought"])
@@ -96,6 +119,7 @@ def reset():
     with open("./data/sold.csv", "w", newline="") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=FIELDNAMES["sold"])
         writer.writeheader()
+    with open("./data/history.txt", "w", newline="") as txt_file:
+        txt_file.write("")
     update_inventory()
 
-    

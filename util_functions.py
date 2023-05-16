@@ -48,11 +48,22 @@ def convert_date(input):
         elif input.lower() == "yesterday":
             date -= datetime.timedelta(days=1)
         else:
-            (day, month, year) = input.split("/")
+            (year,month,day) = input.split("-")
             date = datetime.date(int(year), int(month), int(day)) 
         (year, month, day) = date.isoformat().split("-")
-        return f'{day}/{month}/{year}'
+        return f'{year}-{month}-{day}'
     except:
         raise Exception("Invalid Date")
        
+    
+def remove_last_entry(path):
+    new_entries = []
+    with open(path, newline="") as csvfile:
+        entries = csv.reader(csvfile)
+        for entry in entries:
+            new_entries.append(entry)
+    removed_entry = new_entries.pop()
+    with open(path, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(new_entries)
     

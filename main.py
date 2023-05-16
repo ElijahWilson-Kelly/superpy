@@ -3,7 +3,7 @@ from datetime import date
 
 # My Imports
 from create_parser import create_parser
-from actions import buy_item, sell_item, show_inventory, reset
+from actions import buy_item, sell_item, show_inventory, reset, undo
 
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
@@ -25,6 +25,8 @@ def main():
                 show_inventory()
             case "reset":
                 reset()
+            case "undo":
+                undo()
     except Exception as msg:
         print(msg)
     
