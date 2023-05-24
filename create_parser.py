@@ -7,17 +7,18 @@ def create_parser():
 
     buy_parser = sub_parsers.add_parser("buy")
     buy_parser.add_argument("--product-name", required=True)
-    buy_parser.add_argument("--price", required=True, type=int)
+    buy_parser.add_argument("--price", required=True)
     buy_parser.add_argument("--expiration-date", required=True)
 
     sell_parser = sub_parsers.add_parser("sell")
     sell_parser.add_argument("--product-name", required=True)
-    sell_parser.add_argument("--price", required=True, type=int)
+    sell_parser.add_argument("--price", required=True)
 
-    inventory_parser = sub_parsers.add_parser("inventory")
+    change_date_parser = sub_parsers.add_parser("change_date")
+    change_date_parser.add_argument("new_date")
 
-    reset_parser = sub_parsers.add_parser("reset")
-
-    undo_parser = sub_parsers.add_parser("undo")
+    sub_parsers.add_parser("inventory")
+    sub_parsers.add_parser("reset")
+    sub_parsers.add_parser("undo")
     
     return parser

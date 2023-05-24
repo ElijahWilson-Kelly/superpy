@@ -1,2 +1,1 @@
-product_name,buy_prices,bought_ids,count
-apple,"['8', '8']","['2', '3']",2
+product_name,bought_prices,bought_ids,count
