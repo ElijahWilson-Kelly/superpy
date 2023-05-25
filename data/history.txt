@@ -20,3 +20,9 @@ buy
 sell
 sell
 sell
+buy
+sell
+buy
+buy
+buy
+buy

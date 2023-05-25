@@ -25,7 +25,7 @@ def main():
                 sell_item(commands)
             case "inventory":
                 show_inventory()
-            case "change_date":
+            case "change-date":
                 change_date(commands["new_date"])
             case "reset":
                 reset()

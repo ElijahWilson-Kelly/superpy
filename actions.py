@@ -113,11 +113,11 @@ def show_inventory():
         entries_inventory = csv.DictReader(csvfile)
         for entry in entries_inventory:
             items.append(entry)
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("Product", style="dim", width=16)
-    table.add_column("Number of Items", style="dim", width=16)
-    table.add_column("Avg Purchase Price", style="dim", width=16)
-    table.add_column("Nearest Expiration Date", style="dim", width=16)
+    table = Table(show_header=True, header_style="bold blue")
+    table.add_column("Product", style="green", width=16)
+    table.add_column("Number of Items", style="green", width=16)
+    table.add_column("Avg Purchase Price", style="green", width=16)
+    table.add_column("Nearest Expiration Date", style="green", width=16)
 
     for item in items:
         avg_price = 0
@@ -134,7 +134,12 @@ def show_inventory():
             str(avg_price),
             nearest_expiry_item["expiration_date"]
         )
-    console.print(table)
+
+    if len(items) == 0:
+        console.print("Your inventory is currently empty")
+    else:
+        console.print("")
+        console.print(table)
 
 
 def change_date(new_date):

@@ -60,17 +60,16 @@ def convert_string_to_date(input):
         elif input.lower() == "yesterday":
             date -= datetime.timedelta(days=1)
         else:
-            (year,month,day) = input.split("-")
-            date = datetime.date(int(year), int(month), int(day)) 
+            date = datetime.date.fromisoformat(input)
         return date
     except:
-        raise Exception("Invalid Date")
+        raise Exception(f"Invalid Date \nValid format - YYYY-MM-DD. \nValid keywords - yesterday, today, tomorrow.")
 
 
 def is_valid_name(name):
-    match = re.search("\d+", name)
-    if match:
-        raise Exception("Product name cannot contain numbers")
+    match = re.fullmatch("[a-zA-Z_]+", name)
+    if not match:
+        raise Exception("Invalid Product name \nName can only contain word characters")
         
     
 def remove_last_entry(path):
@@ -83,4 +82,6 @@ def remove_last_entry(path):
     with open(path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(new_entries)
-    
+
+
+
