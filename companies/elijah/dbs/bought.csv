@@ -1,0 +1,5 @@
+id,product_name,buy_date,buy_price,expiration_date
+1,orange,2023-12-09,10,2023-12-10
+2,orange,2023-12-09,10,2023-12-10
+3,orange,2023-12-01,10,2024-10-10
+4,orange,2023-12-01,10,2024-10-10
