@@ -139,6 +139,7 @@ def remove_last_entry(path):
     with open(path, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerows(new_entries)
+    return removed_entry
 
 
 def get_revenue(date_start, date_end = None):

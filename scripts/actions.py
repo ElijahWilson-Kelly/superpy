@@ -12,7 +12,7 @@ FIELDNAMES = {
     "bought": ["id", "product_name", "buy_date", "buy_price", "expiration_date"],
     "sold": ["id", "product_name", "bought_id", "sell_date", "sell_price"],
     "inventory": ["product_name", "bought_prices", "bought_ids", "count"],
-    "expired": ["product_name", "money_lost", "count"]
+    "expired": ["product_name", "count", "money_lost"]
 }
 
 def create_company(name):
@@ -107,7 +107,7 @@ def sell_item(item):
             "sell_price": item["price"]
         })
     add_action_to_history("sell")
-    display_success_message("Item Sold", f"You sold a {item['product_name']} for {item['price']}")
+    display_success_message("Item Sold", [f"You sold a {item['product_name']} for {item['price']}"])
     update_inventory()
 
 
@@ -143,7 +143,7 @@ def update_inventory():
                         "product_name": product_name
                     }
                 
-                expired[product_name]["money_lost"] = expired[product_name].get("money_lost", 0) + int(entry["buy_price"])
+                expired[product_name]["money_lost"] = expired[product_name].get("money_lost", 0) + float(entry["buy_price"])
                 expired[product_name]["count"] = expired[product_name].get("count", 0) + 1
                 continue
             if bought_date > date_current:
@@ -175,27 +175,46 @@ def update_inventory():
 
 def show_inventory(): 
     items = []
-    inventory_path = os.path.join(get_current_company_dir_path(), "dbs", "inventory.csv")
+    inventory_path = get_inventory_csv_path()
     with open(inventory_path) as csvfile:
         entries_inventory = csv.DictReader(csvfile)
         for entry in entries_inventory:
-            items.append(entry)
+            item_row = []
+            avg_price = 0
+            prices = re.findall("\d+\.?\d*", entry["bought_prices"])
+            for price in prices:
+                avg_price += float(price)
+            avg_price = avg_price / len(prices)
+            bought_ids = re.findall("\d+", entry["bought_ids"])
+            nearest_expiry_item = find_closest_expiration_date(bought_ids)
+
+            item_row.append(entry["product_name"].capitalize())
+            item_row.append(entry["count"])
+            item_row.append("${:,.2f}".format(avg_price))
+            item_row.append(nearest_expiry_item["expiration_date"])
+            items.append(item_row)
     if len(items) == 0:
         display_response("Inventory is empty", ["There is currently nothing in the inventory."])
     else:
-        display_table(items)
+        display_table(["Product", "Number of items", "Buy Price (AVG)", "Expire (closest)"], items)
 
 def show_expired_items():
     items = []
-    expired_path = os.path.join(get_current_company_dir_path(), "dbs", "expired.csv")
+    expired_path = get_expired_csv_path()
     with open(expired_path) as csvfile:
         entries = csv.DictReader(csvfile)
         for entry in entries:
-            items.append(entry)
+            item_row = []
+
+            item_row.append(entry["product_name"])
+            item_row.append(entry["count"])
+            item_row.append("${:,.2f}".format(float(entry["money_lost"])))
+
+            items.append(item_row)
     if (len(items)) == 0:
-        display_response("No expired Items", "")
+        display_response("No expired items")
     else:
-        display_table(items)
+        display_table(["Product", "Number of items", "Money lost (Total)"], items)
 
 def change_date(new_date):
     new_date = convert_string_to_date(new_date)
@@ -213,43 +232,55 @@ def add_action_to_history(action):
 
 def report(commands):
     report_type = commands["type"]
-    date = None
-    if commands["date"]:
-        date = convert_string_to_date(commands["date"])
+    date_start = None
+    date_end = None
+    if commands["date_start"]:
+        date_start = convert_string_to_date(commands["date_start"])
     else:
-        date = get_internal_date()
+        date_start = get_internal_date()
+    if commands["date_end"]:
+        date_end = convert_string_to_date(commands["date_end"])
     if report_type == "profit":
-        income = money_made(date)
-        expenditure = money_spent(date)
-        profit = income - expenditure
-        heading = f"Profit for {date.isoformat()}"
+        profit = get_profit(date_start, date_end)
+        heading = ""
+        if date_end:
+            heading = f"Profit for range {date_start.isoformat()} - {date_end.isoformat()}"
+        else:
+            heading = f"Profit for date {date_end.isoformat()}"
         msg = "${0:,.2f}".format(profit)
-        display_response(heading, msg)
+        display_response(heading,[msg])
     else:
-        income = money_made(date)
-        heading = f"Revenue for {date.isoformat()}"
-        msg = "${0:,.2f}".format(income)
-        display_response(heading, msg)
+        income = get_revenue(date_start, date_end)
+        heading = ""
+        if date_end:
+            heading = f"Revenue for range {date_start.isoformat()} - {date_end.isoformat()}"
+        else:
+            heading = f"Revenue for date {date_end.isoformat()}"
+        msg = "${:,.2f}".format(income)
+        display_response(heading, [msg])
         
 
 def undo():
     action = None
     rows = []
-    history_path = os.path.join(get_current_company_dir_path(), "history.txt")
+    history_path = get_history_csv_path()
     with open(history_path) as txt_file:
         rows = re.findall("\w+", txt_file.read())
-        print(rows)
         action = rows.pop()
     
     with open(history_path, "w") as txt_file:
         txt_file.write("\n".join(rows) + "\n")
     
     if action == "buy":
-        bought_path = os.path.join(get_current_company_dir_path(), "dbs", "bought.csv")
-        remove_last_entry(bought_path)
+        bought_path = get_bought_csv_path()
+        removed_entry = remove_last_entry(bought_path)
+        print(removed_entry)
+        display_success_message("Item Deleted", ["Last bought item removed."])
     elif action == "sell":
-        sold_path = os.path.join(get_current_company_dir_path(), "dbs", "sold.csv")
-        remove_last_entry(sold_path)
+        sold_path = get_sold_csv_path()
+        removed_entry = remove_last_entry(sold_path)
+        print(removed_entry)
+        display_success_message("Item Deleted", ["Last sold item removed"])
     update_inventory()
 
 
