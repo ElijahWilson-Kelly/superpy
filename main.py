@@ -1,21 +1,16 @@
-# Imports
-from datetime import date
-from rich.console import Console
-
-# My Imports
-from create_parser import create_parser
-from actions import buy_item, sell_item, show_inventory, change_date, reset, undo
-
 # Do not change these lines.
 __winc_id__ = "a2bc36ea784242e4989deb157d527ba0"
 __human_name__ = "superpy"
 
 
 # Your code below this line.
+from scripts.create_parser import create_parser
+from scripts.actions import buy_item, sell_item, show_inventory, show_expired_items, report, change_date, create_company, change_current_company, undo
+from scripts.console_display import display_error_message
+from scripts.util_functions import InvalidInput, ItemNotInStock
 
 def main():
     parser = create_parser()
-    console = Console()
     commands = vars(parser.parse_args())
     try:
         match commands["action"]:
@@ -24,15 +19,23 @@ def main():
             case "sell":
                 sell_item(commands)
             case "inventory":
-                show_inventory()
-            case "change_date":
+                if commands["expired"]:
+                    show_expired_items()
+                else:
+                    show_inventory()
+            case "report":
+                report(commands)
+            case "change-date":
                 change_date(commands["new_date"])
-            case "reset":
-                reset()
+            case "create-company":
+                create_company(commands["name"])
+            case "change-company":
+                change_current_company(commands["name"])
             case "undo":
                 undo()
-    except Exception as msg:
-        console.print(msg, style="bold red",)
+    except (InvalidInput, ItemNotInStock) as error:
+        display_error_message(error.title, error.descriptions)
+    
     
     
 
