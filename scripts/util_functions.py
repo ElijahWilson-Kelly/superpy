@@ -15,6 +15,11 @@ class ItemNotInStock(Exception):
         self.title = title
         self.descriptions = descriptions
 
+class NoCompanySelected(Exception):
+    def __init__(self):
+        self.title = "No Company Currently Selected"
+        self.descriptions = ["Please create or change to a company to continue"]
+
 # -----------------------------------------------------------------
 # JSON data functions
 # -----------------------------------------------------------------
@@ -41,6 +46,8 @@ def get_json_data(key):
 
 def get_current_company_dir_path():
     company_name = get_json_data("current_company")
+    if not company_name:
+        raise NoCompanySelected()
     return os.path.join(os.getcwd(), "companies", company_name)
 
 
@@ -73,7 +80,8 @@ def get_internal_date():
 # -----------------------------------------------------------------   
 
 def convert_string_to_date(date_string):
-    # Takes an input {string} if not in corrext format YYYY-MM-DD or given keyword (i.e. tomorrow) raises exception
+    # Takes an input {string} if not in corrext format raises exception
+    # returns date object
     match date_string.lower():
         case "tomorrow":
             date_string = "1"
@@ -115,6 +123,7 @@ def find_closest_expiration_date(bought_ids):
 
 
 def get_next_id(csv_file_path):
+    # returns the next id for a given csv file
     result = 0
     with open(csv_file_path, newline="") as csvfile:
         contents = csv.reader(csvfile)
@@ -124,12 +133,14 @@ def get_next_id(csv_file_path):
 
 
 def is_valid_name(name):
-    match = re.fullmatch("[a-zA-Z_]+", name)
+    # checks if the name entered is valid format
+    match = re.fullmatch("[a-zA-Z_-]+", name)
     if not match:
-        raise InvalidInput("Invalid Product name", ["Name can only contain word characters [a-zA-Z_]+", f"You tried using the name {name}"])
+        raise InvalidInput("Invalid name", [f"Name can only contain word characters \[a-zA-Z_-]+", f"You tried using the name \"{name}\""])
         
     
 def remove_last_entry(path):
+    # removes last item from a csv_file
     new_entries = []
     with open(path, newline="") as csvfile:
         entries = csv.reader(csvfile)
@@ -165,7 +176,7 @@ def get_revenue(date_start, date_end = None):
 
 
 def get_profit(date_start, date_end = None):
-    """Returns revenue for given date range (date_start to date_end inclusive)
+    """Returns profit for given date range (date_start to date_end inclusive)
 
     Args:
         date_start (date object): start date for given date range

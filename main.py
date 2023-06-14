@@ -5,9 +5,9 @@ __human_name__ = "superpy"
 
 # Your code below this line.
 from scripts.create_parser import create_parser
-from scripts.actions import buy_item, sell_item, show_inventory, show_expired_items, report, change_date, create_company, change_current_company, undo
+from scripts.actions import buy_item, sell_item, show_inventory, show_expired_items, report, change_date, create_company, change_current_company, undo, delete_everything
 from scripts.console_display import display_error_message
-from scripts.util_functions import InvalidInput, ItemNotInStock
+from scripts.util_functions import InvalidInput, ItemNotInStock, NoCompanySelected
 
 def main():
     parser = create_parser()
@@ -33,7 +33,9 @@ def main():
                 change_current_company(commands["name"])
             case "undo":
                 undo()
-    except (InvalidInput, ItemNotInStock) as error:
+            case "delete-all":
+                delete_everything()
+    except (InvalidInput, ItemNotInStock, NoCompanySelected) as error:
         display_error_message(error.title, error.descriptions)
     
     

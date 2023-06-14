@@ -1,5 +1,4 @@
 import csv
-import datetime
 import os
 import re
 import shutil
@@ -16,12 +15,13 @@ FIELDNAMES = {
 }
 
 def create_company(name):
+    is_valid_name(name)
     name = name.lower()
     company_folder_path = os.path.join(os.getcwd(), "companies", name)
     try:
         os.mkdir(company_folder_path)
+        change_json_data("current_company", name)
         initiate_empty_company(company_folder_path)
-        change_current_company(name)
     except FileExistsError:
         display_response("Company Already Exists!", [f"Would you like to overwrite the company \"{name}\" with a new company?", "This cannot be undone"])
         response = ""
@@ -35,6 +35,8 @@ def create_company(name):
             
     
 def change_current_company(company_name):
+    is_valid_name(company_name)
+    company_name = company_name.lower()
     company_path = os.path.join(os.getcwd(), "companies", company_name)
     if not os.path.isdir(company_path):
         display_response("Company does not Exist", [f"Would you like to create a new company called \"{company_name}\"?"])
@@ -50,18 +52,19 @@ def change_current_company(company_name):
 
 def buy_item(item):
     """Add item to bought database
-
     Args:
         item (dict):
         {
             product_name,
             expiration_date,
             price,
+            action = buy,
         }    
     """
-    expiration_date = convert_string_to_date(item["expiration_date"]) # Convert date to insure is a valid date
+    expiration_date = convert_string_to_date(item["expiration_date"])
     item["expiration_date"] = expiration_date.isoformat()
-    is_valid_name(item["product_name"]) # Verify is a valid name if not function will raise an exception
+    is_valid_name(item["product_name"])
+    item["product_name"] = item["product_name"].lower()
 
     date_current = convert_string_to_date("today")
 
@@ -82,9 +85,21 @@ def buy_item(item):
 
 
 def sell_item(item):
-    date_current = convert_string_to_date("today")
-    bought_ids = None
+    """Add item to sold database
+    Args:
+        item (dict):
+        {
+            product_name,
+            price,
+            action: sell,
+        }  
+    Raises:
+        ItemNotInStock: Raises an error if item not in stock
+    """
+    date_current = convert_string_to_date("0")
+    item["product_name"] = item["product_name"].lower()
 
+    bought_ids = None
     inventory_path = get_inventory_csv_path()
     with open(inventory_path, newline="") as csvfile:
         entries_inventory = csv.DictReader(csvfile)
@@ -206,13 +221,13 @@ def show_expired_items():
         for entry in entries:
             item_row = []
 
-            item_row.append(entry["product_name"])
+            item_row.append(entry["product_name"].capitalize())
             item_row.append(entry["count"])
             item_row.append("${:,.2f}".format(float(entry["money_lost"])))
 
             items.append(item_row)
     if (len(items)) == 0:
-        display_response("No expired items")
+        display_response("No expired items", ["No items have yet expired"])
     else:
         display_table(["Product", "Number of items", "Money lost (Total)"], items)
 
@@ -304,3 +319,10 @@ def initiate_empty_company(company_dir_path):
         txt_file.write("")
     update_inventory()
 
+
+
+def delete_everything():
+    path = os.path.join(os.getcwd(), "companies")
+    shutil.rmtree(path)
+    os.mkdir(path)
+    change_json_data("current_company", "")

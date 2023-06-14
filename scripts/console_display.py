@@ -5,6 +5,12 @@ from scripts.util_functions import get_json_data
 
 console = Console(highlight=False)
 
+# -----------------------------------------------------------------------------
+#
+# Functions for displaying responses back to client
+#
+# -----------------------------------------------------------------------------
+
 def display_error_message(heading, msgs = []):
     console.print("")
     console.print(heading, style="bold red")
@@ -27,7 +33,7 @@ def display_response(heading, msgs = []):
     console.print("")
 
 def display_table(headers, items):
-    table = Table(show_header=True, header_style="purple4")
+    table = Table(show_header=True, header_style="dark_turquoise")
     for name in headers:
         table.add_column(name, width=20)
 

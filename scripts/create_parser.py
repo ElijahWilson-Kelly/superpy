@@ -1,10 +1,5 @@
 import argparse
 
-## report 
-# 1 - history
-# 2 - multiple companies
-# 3 - Inventory update with changes
-# 4 - JSON data
 
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -41,5 +36,7 @@ def create_parser():
     inventory_parser.add_argument("--expired", action='store_true', help="(optional) - shows expired items instead")
 
     sub_parsers.add_parser("undo", help="undo last buy or sell")
+
+    sub_parsers.add_parser("delete-all")
     
     return parser
