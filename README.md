@@ -9,22 +9,22 @@
 Before you can start buying items you first need to create a company. This can be done with the create-company command like so.
 
 ```
-python main.py create-company [COMPANY_NAME]
+python SuperPy create-company --name [COMPANY_NAME]
 ```
 
-we can do this to create multiple companies to keep track of inventory in multiple stores.
+This allows you to keep track of different stock for different stores.
 
-**Warning** _If you try to create a company that already exists you will be asked whether you would like to reset the company. This will remove all data from the company and cannot be undone_
+**Warning** _If you try to create a company that already exists you will be asked whether you would like to reset the company. This will remove all data from the company and cannot be undone._
 
 ---
 
 #### Switching between companies
 
 A newly created company is automatacally made the current selected company.
-To switch between companies we use the change-company command
+To switch between companies we use the change-company command.
 
 ```
-python main.py change-company [COMPANY_NAME]
+python SuperPy change-company --name [COMPANY_NAME]
 ```
 
 _If the company does not yet exist you will be asked if you would like to create the company._
@@ -36,7 +36,7 @@ _If the company does not yet exist you will be asked if you would like to create
 To purchase an item for the currently selected store use the buy command.
 
 ```
-python main.py buy --product-name [PRODUCT_NAME] --price [PRICE] --expiration-date [EXPIRATION_DATE]
+python SuperPy buy --product-name [PRODUCT_NAME] --price [PRICE] --expiration-date [EXPIRATION_DATE]
 ```
 
 ---
@@ -46,10 +46,10 @@ python main.py buy --product-name [PRODUCT_NAME] --price [PRICE] --expiration-da
 To sell an item use the sell command.
 
 ```
-python main.py sell --product-name [PRODUCT_NAME] --price [PRICE]
+python SuperPy sell --product-name [PRODUCT_NAME] --price [PRICE]
 ```
 
-If there are multiple of the same item available the item with the nearest expiration date will be sold.
+_If there are multiple of the same item available the item with the nearest expiration date will be sold._
 
 ---
 
@@ -59,10 +59,8 @@ At all times SuperPy has an iternal conception of what date it is. This allows t
 To change the internal date use the change-date command
 
 ```
-python main.py change-date --new-date [NEW_DATE]
+python SuperPy change-date --new-date [NEW_DATE]
 ```
-
---new-date argument is parsed following [date](#date) format.
 
 ---
 
@@ -73,7 +71,7 @@ python main.py change-date --new-date [NEW_DATE]
 To show the current inventory use the inventory command.
 
 ```
-python main.py inventory
+python SuperPy inventory
 ```
 
 This will show the current inventory based upon the current date and company.
@@ -90,7 +88,7 @@ _Expire (closest)_ - The expiry date of the item that will expired soonest
 If you add the argument _--expired_
 
 ```
-python main.py inventory --expired
+python SuperPy inventory --expired
 ```
 
 It will show all the items that have expired.
@@ -108,7 +106,7 @@ _Money lost (Total)_ - The total cost of all the items
 if you wish to undo either an action you can use the undo command
 
 ```
-python main.py undo
+python SuperPy undo
 ```
 
 this will undo the last buy or sell action for the selected company
@@ -124,19 +122,19 @@ _change-date, create-company & change-company are not effected_
 To get a revenue report for the current day.
 
 ```
-python main.py report revenue
+python SuperPy report revenue
 ```
 
 To get a revenue report for a certain day.
 
 ```
-python main.py report revenue --date-start [DATE]
+python SuperPy report revenue --date-start [DATE]
 ```
 
 To get a revenue report for a range of days.
 
 ```
-python main.py report revenue --date-start [DATE_START] --date-end [DATE_END]
+python SuperPy report revenue --date-start [DATE_START] --date-end [DATE_END]
 ```
 
 ##### Profit
@@ -144,20 +142,32 @@ python main.py report revenue --date-start [DATE_START] --date-end [DATE_END]
 To get a profit report for the current day.
 
 ```
-python main.py report profit
+python SuperPy report profit
 ```
 
 To get a portfit report for a certain day.
 
 ```
-python main.py report profit --date-start [DATE]
+python SuperPy report profit --date-start [DATE]
 ```
 
 To get a profit report for a range of days.
 
 ```
-python main.py report profit --date-start [DATE_START] --date-end [DATE_END]
+python SuperPy report profit --date-start [DATE_START] --date-end [DATE_END]
 ```
+
+---
+
+#### Total Reset
+
+If you would like to completely remove all companies. You can do this with the total-reset command
+
+```
+python SuperPy total-reset
+```
+
+**Warning** _This action cannot be undone_
 
 ---
 
@@ -177,24 +187,24 @@ Valid input for date arguments are:
 
 - **Iso Format** - _YYYY-MM-DD_
 - **Whole number (positive or negative)** - +/-{number} number of days relative to the current internal date
-- **Keyword** - ["yesterday", "today", "tomorrow] relative to current internal date. Equivilant to [-1, 0 , 1] respectively.
+- **Keyword** - ["yesterday", "today", "tomorrow"] relative to current internal date. Equivilant to [-1, 0 , 1] respectively.
 
 **example**
 
 ```
-python main.py change-date --new-date 2023-06-12
+python SuperPy change-date --new-date 2023-06-12
 ```
 
 changes the current date to 12th June 2023
 
 ```
-python main.py change-date --new-date 3
+python SuperPy change-date --new-date 3
 ```
 
 changes the current date to 15th June 2023
 
 ```
-python main.py change-date --new-date yesterday
+python SuperPy change-date --new-date yesterday
 ```
 
 changes the current date to 14th June 2023

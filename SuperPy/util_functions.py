@@ -25,16 +25,16 @@ class NoCompanySelected(Exception):
 # -----------------------------------------------------------------
 
 def change_json_data(key, value):
-    with open(os.path.join(os.getcwd(), "data.json")) as data_file:
+    with open(os.path.join(os.getcwd(), "SuperPy", "data.json")) as data_file:
         data = json.loads(data_file.read())
         
     data[key] = value
-    with open(os.path.join(os.getcwd(), "data.json"), "w") as data_file:
+    with open(os.path.join(os.getcwd(), "SuperPy", "data.json"), "w") as data_file:
         data_json = json.dumps(data, indent=1)
         data_file.write(data_json)
 
 def get_json_data(key):
-    with open(os.path.join(os.getcwd(), "data.json")) as data_file:
+    with open(os.path.join(os.getcwd(), "SuperPy", "data.json")) as data_file:
         data = json.loads(data_file.read())
         return data[key]
 

@@ -37,6 +37,6 @@ def create_parser():
 
     sub_parsers.add_parser("undo", help="undo last buy or sell")
 
-    sub_parsers.add_parser("delete-all")
+    sub_parsers.add_parser("total-reset", help="completely empties companies folder")
     
     return parser

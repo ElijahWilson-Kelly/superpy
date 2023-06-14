@@ -1,7 +1,7 @@
 from rich.console import Console
 from rich.table import Table
 
-from scripts.util_functions import get_json_data
+from util_functions import get_json_data
 
 console = Console(highlight=False)
 

@@ -3,9 +3,9 @@ import os
 import re
 import shutil
 
-from scripts.util_functions import find_closest_expiration_date, get_next_id, get_internal_date, convert_string_to_date, get_revenue, get_profit, remove_last_entry, is_valid_name, get_current_company_dir_path, change_json_data, get_bought_csv_path, get_sold_csv_path, get_inventory_csv_path, get_expired_csv_path, get_history_csv_path, ItemNotInStock
+from util_functions import find_closest_expiration_date, get_next_id, get_internal_date, convert_string_to_date, get_revenue, get_profit, remove_last_entry, is_valid_name, get_current_company_dir_path, change_json_data, get_bought_csv_path, get_sold_csv_path, get_inventory_csv_path, get_expired_csv_path, get_history_csv_path, ItemNotInStock
 
-from scripts.console_display import display_response, display_success_message, display_table
+from console_display import display_response, display_success_message, display_table
 
 FIELDNAMES = {
     "bought": ["id", "product_name", "buy_date", "buy_price", "expiration_date"],
@@ -289,13 +289,13 @@ def undo():
     if action == "buy":
         bought_path = get_bought_csv_path()
         removed_entry = remove_last_entry(bought_path)
-        print(removed_entry)
-        display_success_message("Item Deleted", ["Last bought item removed."])
+
+        display_success_message("Item Deleted", [f"{removed_entry[1]} removed from bought database."])
     elif action == "sell":
         sold_path = get_sold_csv_path()
         removed_entry = remove_last_entry(sold_path)
-        print(removed_entry)
-        display_success_message("Item Deleted", ["Last sold item removed"])
+        
+        display_success_message("Item Deleted", [f"{removed_entry[1]} removed from sold database."])
     update_inventory()
 
 
@@ -322,6 +322,15 @@ def initiate_empty_company(company_dir_path):
 
 
 def delete_everything():
+    response = ""
+    display_response("Confirm Delete", [f"Please confirm that you want to completely remove all companies"])
+    while response != "n" and response != "y":
+        response = input("y or n: ")
+        response = response.lower()
+
+    if response == "n":
+        return
+    
     path = os.path.join(os.getcwd(), "companies")
     shutil.rmtree(path)
     os.mkdir(path)
