@@ -22,8 +22,9 @@ def create_company(name):
         os.mkdir(company_folder_path)
         change_json_data("current_company", name)
         initiate_empty_company(company_folder_path)
+        display_success_message("Company created", [f"You created the company {name}"])
     except FileExistsError:
-        display_response("Company Already Exists!", [f"Would you like to overwrite the company \"{name}\" with a new company?", "This cannot be undone"])
+        display_response("Company Already Exists", [f"Would you like to overwrite the company \"{name}\" with a new company?", "This cannot be undone"])
         response = ""
         while response != "y" and response != "n":
             response = input("y or n: ")
@@ -48,6 +49,7 @@ def change_current_company(company_name):
             create_company(company_name)
     else:
         change_json_data("current_company", company_name)
+        display_success_message("Current Company Changed", [f"Current company is now {company_name}"])
 
 
 def buy_item(item):
