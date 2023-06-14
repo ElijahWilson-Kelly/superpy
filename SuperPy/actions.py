@@ -334,6 +334,7 @@ def delete_everything():
         return
     
     path = os.path.join(os.getcwd(), "companies")
-    shutil.rmtree(path)
-    os.mkdir(path)
-    change_json_data("current_company", "")
+    for entry in os.scandir(path):
+        if entry.is_dir():
+            shutil.rmtree(entry.path)
+            change_json_data("current_company", "")
