@@ -263,7 +263,7 @@ def report(commands):
         if date_end:
             heading = f"Profit for range {date_start.isoformat()} - {date_end.isoformat()}"
         else:
-            heading = f"Profit for date {date_end.isoformat()}"
+            heading = f"Profit for date {date_start.isoformat()}"
         msg = "${0:,.2f}".format(profit)
         display_response(heading,[msg])
     else:
@@ -272,7 +272,7 @@ def report(commands):
         if date_end:
             heading = f"Revenue for range {date_start.isoformat()} - {date_end.isoformat()}"
         else:
-            heading = f"Revenue for date {date_end.isoformat()}"
+            heading = f"Revenue for date {date_start.isoformat()}"
         msg = "${:,.2f}".format(income)
         display_response(heading, [msg])
         
